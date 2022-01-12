@@ -161,7 +161,7 @@ function [stretch] = hz2stretch(pitch1, pitch2)
     stretch = ones(length(pitch1),1);
     for i=1:length(stretch)
         if (pitch1(i) ~= 0 && pitch2(i) ~= 0)
-            stretch(i) = pitch1(i)/pitch2(i);
+            stretch(i) = 2^(pitch1(i)/pitch2(i));
         end
     end
 end

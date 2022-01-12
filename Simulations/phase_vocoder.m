@@ -11,9 +11,9 @@
 %% Testing %%
 
 % read audio
-[audio, fs] = audioread('theremin.wav');
+[audio, fs] = audioread('theremin1.wav');
 % pitch shift audio
-audio_out = pitch_shift(audio, fs, 0.5);
+audio_out = pitch_shift(audio, fs, 1.78645);
 % play output audio
 soundsc(audio_out, fs);
 
