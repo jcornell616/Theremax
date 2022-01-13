@@ -15,7 +15,8 @@ input_audio = input_audio(1:500000,1);
 target_audio = target_audio(500001:1000000)';
 %spectrogram(input_audio,hamming(size(input_audio,1)/100),[],[],fs1);
 % perform pitch shifting
-y = pitch_matcher(input_audio, target_audio, fs1, fs2);
+%y = pitch_matcher(input_audio, target_audio, fs1, fs2);
+y = pitch_shifter(target_audio, 7, 0.5, fs2);
 % output audio
 soundsc(y,fs1);
 
@@ -54,9 +55,15 @@ function [y] = pitch_matcher(input_audio, target_audio, fs1, fs2)
     y = dynamic_phase_vocoder(input_audio, fs1, w_len, stretch_arr);
 end
 
-% changes pitch by scale controlled by modulator pitch
-function [y] = pitch_offsetter(input_audio, modulator_audio, fs1, fs2)
-
+% pitch shifting effect
+function [y] = pitch_shifter(input_audio, step, mix, fs)
+    % constants and variables
+    w_len = 2048;
+    frame_cnt = 4*floor(length(input_audio)/w_len) - 1;
+    stretch_arr = zeros(frame_cnt, 1);
+    stretch_arr(:) = 2^(step/12);
+    pitched = dynamic_phase_vocoder(input_audio, fs, w_len, stretch_arr);
+    y = (1-mix).*input_audio + mix.*pitched(1:length(input_audio));
 end
 
 
@@ -162,6 +169,11 @@ function [stretch] = hz2stretch(pitch1, pitch2)
     for i=1:length(stretch)
         if (pitch1(i) ~= 0 && pitch2(i) ~= 0)
             stretch(i) = pitch2(i)/pitch1(i);
+            if (stretch(i) > 4)
+                stretch(i) = 4;
+            elseif (stretch(i) < 0.25)
+                stretch(i) = 0.25;
+            end
         end
     end
 end
