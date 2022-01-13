@@ -6,13 +6,13 @@
 %% Testing %%
 
 % read input audio
-[input_audio, fs1] = audioread('gabagool.wav');
+[input_audio, fs1] = audioread('counting.wav');
 [target_audio, fs2] = audioread('theremin2.wav');
 % splice audio
 %input_audio = input_audio(550000:740000,1);
-%target_audio = target_audio(250000:680000)';
+%target_audio = target_audio(560000:800000)';
 input_audio = input_audio(1:500000,1);
-target_audio = target_audio(1:680000)';
+target_audio = target_audio(500001:1000000)';
 %spectrogram(input_audio,hamming(size(input_audio,1)/100),[],[],fs1);
 % perform pitch shifting
 y = pitch_matcher(input_audio, target_audio, fs1, fs2);
@@ -40,12 +40,12 @@ function [y] = pitch_matcher(input_audio, target_audio, fs1, fs2)
     end
     % find pitch of input
     for i=0:frames_cnt_input-3
-        frame = input_audio(i*w_len/4+1:i*w_len/4+w_len).*hanning(w_len);
-        input_pitch(i+1) = pitch_detection(frame, fs1);
+        frame = input_audio(i*w_len/4+1:i*w_len/4+w_len);
+        input_pitch(i+1) = CAMDF(frame, fs1);
     end
     % find pitch of target
     for i=0:frames_cnt_target-3
-        frame = target_audio(i*w_len/4+1:i*w_len/4+w_len).*hanning(w_len);
+        frame = target_audio(i*w_len/4+1:i*w_len/4+w_len);
         target_pitch(i+1) = CAMDF(frame, fs2);
     end
     % compute stretch array
@@ -84,7 +84,7 @@ function [pitch] = CAMDF(x, fs)
         prev_val = Dm;
     end
     pitch = fs / (min_i - 1);
-    if (pitch >= 1600)
+    if (pitch >= 2400)
         pitch = 0;
     end
 end
@@ -161,7 +161,7 @@ function [stretch] = hz2stretch(pitch1, pitch2)
     stretch = ones(length(pitch1),1);
     for i=1:length(stretch)
         if (pitch1(i) ~= 0 && pitch2(i) ~= 0)
-            stretch(i) = 2^(pitch1(i)/pitch2(i));
+            stretch(i) = pitch2(i)/pitch1(i);
         end
     end
 end
