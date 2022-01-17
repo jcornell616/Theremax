@@ -8,18 +8,12 @@
 %% Testing %%
 
 % input audio
-[audio, fs] = audioread('theremin.wav');
-frame = audio(360001:361024);
-F = fft(frame);
-n = 0:fs/1024:fs-1;
-figure;
-plot(n,F);
+[audio, fs] = audioread('theremin2.wav');
+frame = audio(360001:362048);
+input = frame.*(2^12/max(frame));
 
 % test different algorithms
-pitch_acf = ACF(frame, fs);
-pitch_amdf = AMDF(frame, fs);
-%pitch_hramdf = HRAMDF(frame, fs);
-pitch_camdf = CAMDF(frame, fs);
+pitch_camdf = CAMDF(input, fs);
 
 %% Functions %%
 
@@ -103,7 +97,7 @@ end
 
 function [pitch] = CAMDF(x, fs)
     % variables
-    L = size(x,1);
+    L = size(x,2);
     D = zeros(L,1);
     % perform CAMDF
     min_val = 10000;
@@ -121,6 +115,8 @@ function [pitch] = CAMDF(x, fs)
         end
         prev_val = Dm;
     end
+    figure;
+    plot(1:L,D);
     pitch = fs / (min_i - 1);
     if (pitch == 2400)
         pitch = 0;

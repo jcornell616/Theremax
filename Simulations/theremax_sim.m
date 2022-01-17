@@ -15,8 +15,8 @@ input_audio = input_audio(1:500000,1);
 target_audio = target_audio(500001:1000000)';
 %spectrogram(input_audio,hamming(size(input_audio,1)/100),[],[],fs1);
 % perform pitch shifting
-%y = pitch_matcher(input_audio, target_audio, fs1, fs2);
-y = pitch_shifter(target_audio, 7, 0.5, fs2);
+y = pitch_matcher(input_audio, target_audio, fs1, fs2);
+%y = pitch_shifter(input_audio, 11, 1, fs2);
 % output audio
 soundsc(y,fs1);
 
