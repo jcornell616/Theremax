@@ -1,0 +1,27 @@
+#  | Part
+___|___________________________________
+3  | 0805 270K 1% Resistor
+4  | 0805 47K 1% Resistor
+3  | 0805 27K 1% Resistor
+3  | 0805 22K 1% Resistor
+5  | 0805 4.7K 1% Resistor
+1  | 0805 2.2K 1% Resistor
+1  | 0805 470 1% Resistor
+2  | 0805 100 1% Resistor
+2  | 0805 220uF 10% Tantalum Capacitor
+15 | 0805 10uF 10% Tantalum Capacitor
+1  | 0805 1uF 10% Tantalum Capacitor
+4  | 0805 0.47uF 1% Ceramic Capacitor
+6  | 0805 0.1uF 1% Ceramic Capacitor
+1  | 0805 0.01uF 1% Ceramic Capacitor
+2  | 0805 100pF 1% Ceramic Capacitor
+1  | 0805 36pF 1% Ceramic Capacitor
+1  | 0805 33pF 1% Ceramic Capacitor
+2  | 0805 1N4148 Diode
+3  | 0805 Ferrite Bead
+1  | 27K Potentiometer
+1  | 10K Trimmer
+1  | 1K Potentiometer
+1  | 12.288 MHz XTAL
+1  | LM1086CT-3.3 (3.3V Regulator)
+1  | LM1086CT-5.0 (5V Regulator)
