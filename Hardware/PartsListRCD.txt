@@ -6,10 +6,12 @@ ___|___________________________________
 3  | 0805 22K 1% Resistor
 5  | 0805 4.7K 1% Resistor
 1  | 0805 2.2K 1% Resistor
+2  | 0805 1K 1% Resistor
 1  | 0805 470 1% Resistor
+2  | 0805 220 1% Resistor
 2  | 0805 100 1% Resistor
 2  | 0805 220uF 10% Tantalum Capacitor
-15 | 0805 10uF 10% Tantalum Capacitor
+19 | 0805 10uF 10% Tantalum Capacitor
 1  | 0805 1uF 10% Tantalum Capacitor
 4  | 0805 0.47uF 1% Ceramic Capacitor
 6  | 0805 0.1uF 1% Ceramic Capacitor
