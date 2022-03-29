@@ -5,17 +5,21 @@
 
 %% Testing %%
 
+b = [-0.006720587782525632 -0.006378915456763193 -0.008166026677755706 -0.009066783601051608 -0.008430189898554818 -0.005626571649401271 -0.0001446876682601644 0.008313267316714775 0.019730456846855076 0.03372777814532005 0.04958875002019288 0.06625797365326794 0.0824825336222236 0.0969175401777093 0.1082944258565729 0.11557605156904968 0.1180821746027303 0.11557605156904968 0.1082944258565729 0.0969175401777093 0.0824825336222236 0.06625797365326794 0.04958875002019288 0.03372777814532005 0.019730456846855076 0.008313267316714775 -0.0001446876682601644 -0.005626571649401271 -0.008430189898554818 -0.009066783601051608 -0.008166026677755706 -0.006378915456763193 -0.006720587782525632];
+
+
+
 % read input audio
 [input_audio, fs1] = audioread('counting.wav');
-[target_audio, fs2] = audioread('theremin2.wav');
+[target_audio, fs2] = audioread('c_scale.wav');
 % splice audio
 %input_audio = input_audio(550000:740000,1);
 %target_audio = target_audio(560000:800000)';
 input_audio = input_audio(1:500000,1);
-target_audio = target_audio(500001:1000000)';
+target_audio = downsample(filter(b, 1, target_audio(500001:1000000)'), 4);
 %spectrogram(input_audio,hamming(size(input_audio,1)/100),[],[],fs1);
 % perform pitch shifting
-y = pitch_matcher(input_audio, target_audio, fs1, fs2);
+y = pitch_matcher(input_audio, target_audio, fs1, 12000);
 %y = pitch_shifter(input_audio, 11, 1, fs2);
 % output audio
 soundsc(y,fs1);
@@ -26,7 +30,7 @@ soundsc(y,fs1);
 % matches input pitch to target pitch
 function [y] = pitch_matcher(input_audio, target_audio, fs1, fs2)
     % constants and variables
-    w_len = 2048;
+    w_len = 512;
     % find amount of frames needed for input
     frames_cnt_input = 4*floor(length(input_audio)/w_len) - 1;
     input_pitch = zeros(frames_cnt_input, 1);
@@ -40,15 +44,16 @@ function [y] = pitch_matcher(input_audio, target_audio, fs1, fs2)
         frames_cnt_target = frames_cnt_input;
     end
     % find pitch of input
-    for i=0:frames_cnt_input-3
-        frame = input_audio(i*w_len/4+1:i*w_len/4+w_len);
-        input_pitch(i+1) = CAMDF(frame, fs1);
-    end
+    %for i=0:frames_cnt_input-3
+    %    frame = input_audio(i*w_len/4+1:i*w_len/4+w_len);
+    %    input_pitch(i+1) = CAMDF(frame, fs1);
+    %end
     % find pitch of target
     for i=0:frames_cnt_target-3
         frame = target_audio(i*w_len/4+1:i*w_len/4+w_len);
         target_pitch(i+1) = CAMDF(frame, fs2);
     end
+    midi_test = floor(12*log2(12000) - 12*log2(target_pitch*440)) + 69;
     % compute stretch array
     stretch_arr = hz2stretch(input_pitch, target_pitch);
     % do phase vocoder
@@ -90,7 +95,7 @@ function [pitch] = CAMDF(x, fs)
         end
         prev_val = Dm;
     end
-    pitch = fs / (min_i - 1);
+    pitch = min_i - 1%fs / (min_i - 1);
     if (pitch >= 2400)
         pitch = 0;
     end
