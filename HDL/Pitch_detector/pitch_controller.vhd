@@ -19,9 +19,10 @@ entity pitch_controller is
         clk         : in std_logic;
         rst         : in std_logic;
         go          : in std_logic;
-		done		: out std_logic;
+		  done		  : out std_logic;
         input		  : in std_logic_vector(TREE_OUT_RANGE);
-		period		  : out std_logic_vector(DATA_RANGE)
+		  period		  : out std_logic_vector(DATA_RANGE);
+		  magnitude	  : out std_logic_vector(TREE_OUT_RANGE) -- for testing
 	 );
 end pitch_controller;
 
@@ -34,6 +35,7 @@ architecture FSM of pitch_controller is
 	 signal min_index, next_min_index	: std_logic_vector(DATA_RANGE);
 	 signal prev_val, next_prev_val		: std_logic_vector(TREE_OUT_RANGE);
 	 signal min_val, next_min_val			: std_logic_vector(TREE_OUT_RANGE);
+
 begin
 
 	-- resize min_index for output
@@ -59,6 +61,7 @@ begin
 	
 	-- handle combinational logic
     process(go, cnt, state, input, min_index, prev_val, min_val)
+			--constant NOISE : std_logic_vector(TREE_OUT_RANGE) := std_logic_vector(to_unsigned(NOISE_THRESH, NOISE'length));
     begin
 		case state is
             when S_START =>
@@ -84,9 +87,10 @@ begin
 				-- handle logic
 				next_prev_val	<= input;
 				next_cnt			<= cnt + 1;
-				if ((input < min_val) AND (input < prev_val) AND (cnt > 9)) then
+				if ((input < min_val) AND (input < prev_val) AND (input > std_logic_vector(to_unsigned(NOISE_THRESH, 22))) AND (cnt > PER_CUTOFF)) then
 					next_min_val	<= input;
 					next_min_index	<= std_logic_vector(cnt);
+					magnitude		<= min_val; -- for testing
 				else
 					next_min_val	<= min_val;
 					next_min_index	<= min_index;
@@ -104,4 +108,5 @@ begin
             when others => null;
         end case;
 	end process;
+	
 end FSM;

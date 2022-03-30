@@ -18,8 +18,8 @@ entity ADC is
         clk 	 	: in std_logic;
 		  rst			: in std_logic;
 		  buff_ld	: out std_logic;
-		  voltage	: out std_logic_vector(BUFF_DATA_RANGE);
-		  test		: out std_logic -- delete later
+		  voltage1	: out std_logic_vector(BUFF_DATA_RANGE);
+		  voltage2	: out std_logic_vector(BUFF_DATA_RANGE)
 	);
 end ADC;
 
@@ -47,8 +47,6 @@ architecture STR of ADC is
 			 ch4, ch5, ch6, ch7	: std_logic_vector(ADC_DATA_RANGE);
 
 begin
-
-	test <= adc_clk; -- delete later
 
 	-- adc controller
 	U_ADC_CONT : entity work.adc_controller
@@ -88,7 +86,7 @@ begin
 	);
 	
 	-- output register
-	U_VOLT : entity work.reg
+	U_VOLT1 : entity work.reg
 	generic map (
 		width  => BUFF_DATA_SIZE
 	)
@@ -96,8 +94,21 @@ begin
 		clk    => clk,
 		rst    => rst,
 		en     => sample,
-		input  => ch0(11 downto 4),
-		output => voltage
+		input  => ch0(11 downto (ADC_DATA_SIZE - BUFF_DATA_SIZE)),
+		output => voltage1
+	);
+	
+	-- output register
+	U_VOLT2 : entity work.reg
+	generic map (
+		width  => BUFF_DATA_SIZE
+	)
+	port map (
+		clk    => clk,
+		rst    => rst,
+		en     => sample,
+		input  => ch1(11 downto (ADC_DATA_SIZE - BUFF_DATA_SIZE)),
+		output => voltage2
 	);
 		
 end STR;

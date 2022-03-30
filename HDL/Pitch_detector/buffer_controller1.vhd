@@ -16,10 +16,10 @@ use work.user_pkg.all;
 
 entity buffer_controller1 is
     port (
-        clk         : in std_logic;
-        rst         : in std_logic;
-        go          : in std_logic;
-        load		: in std_logic;
+      clk         : in std_logic;
+      rst         : in std_logic;
+      go          : in std_logic;
+      load			: in std_logic;
 		buffers_ld  : out std_logic
 	);
 end buffer_controller1;
@@ -36,7 +36,7 @@ begin
     process(clk, rst)
     begin
         if (rst = '1') then
-            state   <= S_CNT;
+            state   <= S_START;
             cnt     <= (others => '0');
         elsif (rising_edge(clk)) then
             state   <= next_state;
