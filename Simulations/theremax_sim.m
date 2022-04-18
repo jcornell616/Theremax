@@ -128,7 +128,7 @@ function [y] = dynamic_phase_vocoder(x, fs, w_len, stretch_arr)
         % perform phase vocoding
         [new_frame, phi, psi] = phase_vocoder_fft(frame, phi, psi, stretch_arr(n+1));
         % perform interpolation
-        interp_frame = interpolation(new_frame.*w, stretch_arr(n+1));
+        interp_frame = interpolation(new_frame, stretch_arr(n+1));
         % overlap and add
         y(n*w_len/4+1:n*w_len/4+interp_index(n+1)) = y(n*w_len/4+1:n*w_len/4+interp_index(n+1)) + interp_frame;
     end

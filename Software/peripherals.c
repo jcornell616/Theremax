@@ -65,3 +65,62 @@ void StartConversionADCA(void) {
     //Start conversion for ADCASOC0-2
     AdcaRegs.ADCSOCFRC1.all = 0b111;
 }
+
+// Initialize GPIO for absolute encoder on GPIO16-19
+void InitEncoder(void) {
+
+    EALLOW;
+
+    GpioCtrlRegs.GPAPUD.bit.GPIO16 = 0;
+    GpioCtrlRegs.GPAPUD.bit.GPIO17 = 0;
+    GpioCtrlRegs.GPAPUD.bit.GPIO18 = 0;
+    //GpioCtrlRegs.GPAPUD.bit.GPIO19 = 0;
+
+    GpioCtrlRegs.GPAGMUX2.bit.GPIO16 = 0;
+    GpioCtrlRegs.GPAGMUX2.bit.GPIO17 = 0;
+    GpioCtrlRegs.GPAGMUX2.bit.GPIO18 = 0;
+    //GpioCtrlRegs.GPAGMUX2.bit.GPIO19 = 0;
+
+    GpioCtrlRegs.GPAMUX2.bit.GPIO16 = 0;
+    GpioCtrlRegs.GPAMUX2.bit.GPIO17 = 0;
+    GpioCtrlRegs.GPAMUX2.bit.GPIO18 = 0;
+    //GpioCtrlRegs.GPAMUX2.bit.GPIO19 = 0;
+
+    GpioCtrlRegs.GPADIR.bit.GPIO16 = 0;
+    GpioCtrlRegs.GPADIR.bit.GPIO17 = 0;
+    GpioCtrlRegs.GPADIR.bit.GPIO18 = 0;
+    //GpioCtrlRegs.GPADIR.bit.GPIO19 = 0;
+}
+
+// return current state as selected by absolute encoder
+state_t GetState(void) {
+    state_t current_state;
+    // get GPIO
+    Uint16 data = (GpioDataRegs.GPADAT.bit.GPIO19)<<2 || (GpioDataRegs.GPADAT.bit.GPIO18)<<1
+                || (GpioDataRegs.GPADAT.bit.GPIO17); //|| (GpioDataRegs.GPADAT.bit.GPIO16);
+    // select state
+    switch(data) {
+        case 0:
+            current_state = VOCODER;
+            break;
+        case 1:
+            current_state = THEREMIN_PS;
+            break;
+        case 2:
+            current_state = AUDIO_PS;
+            break;
+        case 3:
+            current_state = THEREMIN_AUDIO;
+            break;
+        case 4:
+            current_state = THEREMIN;
+            break;
+        case 5:
+            current_state = AUDIO;
+            break;
+        default:
+            current_state = UNDEF;
+            break;
+    }
+    return current_state;
+}
