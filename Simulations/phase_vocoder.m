@@ -11,9 +11,15 @@
 %% Testing %%
 
 % read audio
-[audio, fs] = audioread('theremin1.wav');
+%[audio, fs] = audioread('theremin1.wav');
+fs = 8000;
+n = 0:1/fs:5;
+hz = 250;
+audio = sin(2*pi*hz*n)';
 % pitch shift audio
-audio_out = pitch_shift(audio, fs, 1.78645);
+audio_out = pitch_shift(audio, fs, 2);
+figure;
+plot(n(500:1000),audio(500:1000),n(500:1000),audio_out(500:1000));
 % play output audio
 soundsc(audio_out, fs);
 
@@ -23,9 +29,9 @@ soundsc(audio_out, fs);
 % pitches input audio by a factor of 'stretch'
 function [y] = pitch_shift(x, fs, stretch)
     % constants and variables
-    w_len = 2048;
+    w_len = 256;
     w = hanning(w_len);
-    frame_cnt = 4*floor(length(x)/w_len) - 1;
+    frame_cnt = 2*floor(length(x)/w_len) - 1;
     interp_index = floor(w_len/stretch);
     y = zeros(length(x) + interp_index, 1);
     phi = zeros(w_len, 1);
@@ -33,13 +39,13 @@ function [y] = pitch_shift(x, fs, stretch)
     % iterate through each frame
     for n=0:frame_cnt-1
         % retrieve frame
-        frame = x(n*w_len/4+1:(n/4+1)*w_len).*w;
+        frame = x(n*w_len/2+1:(n/2+1)*w_len).*w;
         % perform phase vocoding
         [new_frame, phi, psi] = phase_vocoder_fft(frame, phi, psi, stretch);
         % perform interpolation
         interp_frame = interpolation(new_frame.*w, stretch);
         % overlap and add
-        y(n*w_len/4+1:n*w_len/4+interp_index) = y(n*w_len/4+1:n*w_len/4+interp_index) + interp_frame;
+        y(n*w_len/2+1:n*w_len/2+interp_index) = y(n*w_len/2+1:n*w_len/2+interp_index) + interp_frame;
     end
 end
 

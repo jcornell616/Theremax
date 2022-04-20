@@ -7,7 +7,6 @@
         VOCODER,
         THEREMIN_PS,
         AUDIO_PS,
-        THEREMIN_AUDIO,
         THEREMIN,
         AUDIO,
         UNDEF
@@ -19,5 +18,6 @@
     void StartConversionADCA(void);
     void InitEncoder(void);
     state_t GetState(void);
+    void LineOn(void);
 
 #endif

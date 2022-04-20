@@ -9,33 +9,34 @@
 #include <F28x_Project.h>
 #include "peripherals.h"
 #include "InitAIC23.h"
+#include "AIC23.h"
 
 // turns on AIC23 microphone
 void MicOn(void) {
     uint16_t command;
     command = softpowerdown();  // Power down
-    SpiTransmit(command);
+    SpiaTransmit(command);
     SmallDelay();
     command = linput_volctl(LIM);   // Mute left line in
-    SpiTransmit(command);
+    SpiaTransmit(command);
     SmallDelay();
     command = rinput_volctl(RIM);   // Mute right line in
-    SpiTransmit(command);
+    SpiaTransmit(command);
     SmallDelay();
     command = lhp_volctl(LHV);       // Left headphone volume control
-    SpiTransmit(command);
+    SpiaTransmit(command);
     SmallDelay();
     command = rhp_volctl(RHV);       // Right headphone volume control
-    SpiTransmit(command);
+    SpiaTransmit(command);
     SmallDelay();
     command = aaudpath();       // Turn on DAC and mic
-    SpiTransmit(command);
+    SpiaTransmit(command);
     SmallDelay();
     command = digaudiopath();       // Disable DAC mute, add de-emph
-    SpiTransmit(command);
+    SpiaTransmit(command);
     SmallDelay();
     command = fullpowerup();    //power up
-    SpiTransmit(command);
+    SpiaTransmit(command);
     SmallDelay();
 }
 
@@ -71,51 +72,49 @@ void InitEncoder(void) {
 
     EALLOW;
 
-    GpioCtrlRegs.GPAPUD.bit.GPIO16 = 0;
-    GpioCtrlRegs.GPAPUD.bit.GPIO17 = 0;
-    GpioCtrlRegs.GPAPUD.bit.GPIO18 = 0;
-    GpioCtrlRegs.GPAPUD.bit.GPIO19 = 0;
+    EALLOW;
 
-    GpioCtrlRegs.GPAGMUX2.bit.GPIO16 = 0;
-    GpioCtrlRegs.GPAGMUX2.bit.GPIO17 = 0;
-    GpioCtrlRegs.GPAGMUX2.bit.GPIO18 = 0;
-    GpioCtrlRegs.GPAGMUX2.bit.GPIO19 = 0;
+        GpioCtrlRegs.GPAPUD.bit.GPIO0 = 0;
+        GpioCtrlRegs.GPAPUD.bit.GPIO1 = 0;
+        GpioCtrlRegs.GPAPUD.bit.GPIO2 = 0;
+        GpioCtrlRegs.GPAPUD.bit.GPIO3 = 0;
 
-    GpioCtrlRegs.GPAMUX2.bit.GPIO16 = 0;
-    GpioCtrlRegs.GPAMUX2.bit.GPIO17 = 0;
-    GpioCtrlRegs.GPAMUX2.bit.GPIO18 = 0;
-    GpioCtrlRegs.GPAMUX2.bit.GPIO19 = 0;
+        GpioCtrlRegs.GPAGMUX1.bit.GPIO0 = 0;
+        GpioCtrlRegs.GPAGMUX1.bit.GPIO1 = 0;
+        GpioCtrlRegs.GPAGMUX1.bit.GPIO2 = 0;
+        GpioCtrlRegs.GPAGMUX1.bit.GPIO3 = 0;
 
-    GpioCtrlRegs.GPADIR.bit.GPIO16 = 0;
-    GpioCtrlRegs.GPADIR.bit.GPIO17 = 0;
-    GpioCtrlRegs.GPADIR.bit.GPIO18 = 0;
-    GpioCtrlRegs.GPADIR.bit.GPIO19 = 0;
+        GpioCtrlRegs.GPAMUX1.bit.GPIO0 = 0;
+        GpioCtrlRegs.GPAMUX1.bit.GPIO1 = 0;
+        GpioCtrlRegs.GPAMUX1.bit.GPIO2 = 0;
+        GpioCtrlRegs.GPAMUX1.bit.GPIO3 = 0;
+
+        GpioCtrlRegs.GPADIR.bit.GPIO0 = 0;
+        GpioCtrlRegs.GPADIR.bit.GPIO1 = 0;
+        GpioCtrlRegs.GPADIR.bit.GPIO2 = 0;
+        GpioCtrlRegs.GPADIR.bit.GPIO3 = 0;
 }
 
 // return current state as selected by absolute encoder
 state_t GetState(void) {
     state_t current_state;
     // get GPIO
-    Uint16 data = (GpioDataRegs.GPADAT.bit.GPIO19)<<3 || (GpioDataRegs.GPADAT.bit.GPIO18)<<2
-                || (GpioDataRegs.GPADAT.bit.GPIO17)<<1 || (GpioDataRegs.GPADAT.bit.GPIO16);
+    Uint16 data = (GpioDataRegs.GPADAT.all) & 0xF;
     // select state
     switch(data) {
-        case 0:
+        case 9:
             current_state = VOCODER;
             break;
-        case 1:
+        case 12:
             current_state = THEREMIN_PS;
             break;
-        case 2:
+        case 13:
             current_state = AUDIO_PS;
             break;
-        case 3:
-            current_state = THEREMIN_AUDIO;
-            break;
-        case 4:
+        case 14:
             current_state = THEREMIN;
             break;
-        case 5:
+        case 15:
             current_state = AUDIO;
             break;
         default:
@@ -123,4 +122,12 @@ state_t GetState(void) {
             break;
     }
     return current_state;
+}
+
+// Turn on line input
+void LineOn(void) {
+    uint16_t command;
+    command = nomicaaudpath();  // Power down
+    SpiaTransmit(command);
+    SmallDelay();
 }
